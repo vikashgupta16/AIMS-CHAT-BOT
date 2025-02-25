@@ -4,6 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbot</title>
+<script>
+    let btn = document.querySelector("#btn");
+    let content = document.querySelector("#chat-container");
+    let messageInput = document.querySelector("#message-input");
+    let suggestionsContainer = document.querySelector("#suggestions");
+    let darkModeToggle = document.querySelector("#dark-mode-toggle");
+    let isDarkMode = false; // Track dark mode state
+
+    // Predefined responses
+    const responses = {
+        "hello": "Hello! How can I assist you today?",
+        "who are you": "I am a chatbot designed to help you with your queries.",
+        "subjects": "We offer a variety of subjects including Math, Science, and Literature.",
+        "courses": "Our courses include Computer Science, Business Administration, and more.",
+        "college": "We are a part of XYZ College, known for our excellent programs.",
+        "contact": "You can contact us at contact@xyzcollege.edu.",
+        "time": new Date().toLocaleTimeString(),
+        "date": new Date().toLocaleDateString(),
+        // Add more responses as needed
+    };
+
+    function displayMessage(text, isUser  = false) {
+        let messageDiv = document.createElement("div");
+        messageDiv.classList.add("message", isUser  ? "user-message" : "assistant-message");
+        messageDiv.innerText = text;
+        content.appendChild(messageDiv);
+
+        setTimeout(() => {
+            content.scrollTop = content.scrollHeight;
+        }, 0);
+    }
+
+    function showTypingIndicator() {
+        let typingDiv = document.createElement("div");
+        typingDiv.classList.add("typing-indicator");
+        typingDiv.innerText = "Assistant is typing...";
+        content.appendChild(typingDiv);
+        content.scrollTop = content.scrollHeight;
+        return typingDiv;
+    }
+
+    function wishMe() {
+        let hours = new Date().getHours();
+        let greeting =
+            hours < 12 ? "Good Morning Students" :
+            hours < 18 ? "Good Afternoon Students" :
+            hours < 21 ? "Good Evening Students" : "Good Night Students";
+
+        displayMessage(greeting);
+    }
+    document.addEventListener("DOMContentLoaded", wishMe);
+
+    function takeCommand(message) {
+        message = message.toLowerCase().trim();
+        let typing = showTypingIndicator();
+
+        setTimeout(() => {
+            content.removeChild(typing);
+            if (responses[message]) {
+                typeof responses[message] === "function" ? responses[message]() : displayMessage(responses[message]);
+            } else {
+                displayMessage("I'm not sure how to respond to that. Try asking about subjects, courses, or contacting us!");
+            }
+        }, 1000);
+    }
+
+    function handleUser Input() {
+        let userMessage = messageInput.value.trim();
+        if (!userMessage) return;
+
+        displayMessage(userMessage, true);
+        takeCommand(userMessage);
+        setTimeout(() => (messageInput.value = ""), 100);
+    }
+
+    btn.addEventListener("click", handleUser Input);
+    messageInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleUser Input();
+    });
+
+    function generateSuggestions() {
+        let suggestions = ["hello", "who are you", "subjects", "courses", "college", "contact", "time", "date"];
+        suggestions.forEach(text => {
+            let button = document.createElement("button");
+            button.classList.add("suggestion-btn");
+            button.innerText = text;
+            button.addEventListener("click", () => {
+                messageInput.value = text;
+                handleUser Input();
+            });
+            suggestionsContainer.appendChild(button);
+        });
+    }
+
+    darkModeToggle.addEventListener("click", () => {
+        isDarkMode = !isDarkMode; // Toggle the state
+        document.body.classList.toggle("dark", isDarkMode);
+        document.getElementById("chat-container").classList.toggle("dark", isDarkMode);
+        darkModeToggle.innerText = isDarkMode ? "Switch to Classic Mode" : "Switch to Dark Mode";
+    });
+
+    generateSuggestions();
+</script>
     <style>
         body {
             font-family: Arial, sans-serif;
