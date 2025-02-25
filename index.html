@@ -3,96 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIMS Chat Assistant</title>
+    <title>Chatbot</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-
-        #chat-container {
-            max-width: 600px; /* Maximum width for larger screens */
-            width: 100%; /* Full width for smaller screens */
-            height: 80vh; /* Height relative to viewport */
-            border: 1px solid #ccc;
-            margin: 20px auto;
-            padding: 10px;
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #f4f4f4;
         }
-
-        #content {
-            flex-grow: 1; /* Allow content to grow */
-            margin-bottom: 10px;
-            overflow-y: auto; /* Scrollable content */
+        #chat-container {
+            width: 90%;
+            max-width: 400px;
+            height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
+        .message {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+            max-width: 75%;
+        }
+        .user-message {
+            background: #0084ff;
+            color: white;
+            text-align: right;
+            align-self: flex-end;
+        }
+        .assistant-message {
+            background: #e1e1e1;
+            color: black;
+            align-self: flex-start;
+        }
+        #suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .suggestion-btn {
+            padding: 5px 10px;
+            border: none;
+            background: #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
         #input-container {
             display: flex;
-            width: 100%; /* Full width */
+            width: 90%;
+            max-width: 400px;
+            margin-top: 10px;
         }
-
         #message-input {
-            flex-grow: 1; /* Allow input to grow */
-            padding: 10px;
+            flex: 1;
+            padding: 8px;
             border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px; /* Larger font for better readability */
+            border-radius: 5px;
         }
-
         #btn {
-            padding: 10px 15px;
-            cursor: pointer;
-            background-color: #007bff; /* Bootstrap primary color */
+            padding: 8px 12px;
+            background: #0084ff;
             color: white;
             border: none;
-            border-radius: 4px;
-            margin-left: 5px; /* Space between input and button */
-            font-size: 16px; /* Larger font for better readability */
+            cursor: pointer;
+            margin-left: 5px;
+            border-radius: 5px;
         }
-
-        .message {
-            margin: 5px 0;
-            padding: 5px;
-            border-radius: 4px;
-        }
-
-        .user-message {
-            text-align: right;
-            color: blue;
-            background-color: #e1f5fe; /* Light blue background for user messages */
-        }
-
-        .assistant-message {
-            text-align: left;
-            color: green;
-            background-color: #e8f5e9; /* Light green background for assistant messages */
-        }
-
-        /* Responsive Design */
-        @media (max-width: 600px) {
-            #chat-container {
-                height: 90vh; /* More height for smaller screens */
-            }
-
-            #message-input {
-                font-size: 14px; /* Smaller font for mobile */
-            }
-
-            #btn {
-                font-size: 14px; /* Smaller font for mobile */
-            }
+        .typing-indicator {
+            font-style: italic;
+            color: gray;
         }
     </style>
 </head>
 <body>
-    <div id="chat-container">
-        <div id="content"></div>
-    </div>
+
+    <div id="chat-container"></div>
+
+    <div id="suggestions"></div>
+
     <div id="input-container">
         <input type="text" id="message-input" placeholder="Type your message...">
         <button id="btn">Send</button>
@@ -100,85 +95,113 @@
 
     <script>
         let btn = document.querySelector("#btn");
-        let content = document.querySelector("#content");
+        let content = document.querySelector("#chat-container");
         let messageInput = document.querySelector("#message-input");
+        let suggestionsContainer = document.querySelector("#suggestions");
 
-        // Display a message in the chat
-        function displayMessage(text, isUser  = false) {
-            let messageDiv = document.createElement("div");
-            messageDiv.classList.add("message");
-            messageDiv.classList.add(isUser  ? "user-message" : "assistant-message");
-            messageDiv.innerText = text;
-            content.appendChild(messageDiv);
-            content.scrollTop = content.scrollHeight; // Auto-scroll to bottom
-        }
-
-        // Initial greeting based on time of day
-        function wishMe() {
-            let day = new Date();
-            let hours = day.getHours();
-            let greeting;
-            if (hours >= 0 && hours < 12) {
-                greeting = "Good Morning Students";
-            } else if (hours >= 12 && hours < 16) {
-                greeting = "Good Afternoon Students";
-            } else {
-                greeting = "Good Evening Students";
-            }
-            displayMessage(greeting);
-        }
-        window.onload = wishMe;
-
-        // Process the user's command
-        function takeCommand(message) {
-            message = message.toLowerCase();
-
-            if (message.includes("hello") || message.includes("hey")) {
-                displayMessage("Hello student, what can I help you with?");
-            } else if (message.includes("who are you")) {
-                displayMessage("I am your virtual assistant for AIMS (AMIT INSTITUTE OF MATH'S AND SCIENCE), created using modern web technologies.");
-            } else if (message.includes("subjects") || message.includes("courses")) {
-                displayMessage("Please tell me your interests or career goals, and I can suggest suitable subjects or courses.");
-            } else if (message.includes("college") || message.includes("university")) {
-                displayMessage("Are you looking for specific colleges or general advice on how to choose one?");
-            } else if (message.includes("contact help") || message.includes("contact")) {
-                displayMessage("You can reach out to our academic advisor at advisor@aims.edu or call us at (123) 456-7890.");
-            } else if (message.includes("open youtube")) {
+        // Predefined responses
+        let responses = {
+            "hello": "Hello student, what can I help you with?",
+            "who are you": "I am your virtual assistant for AIMS (AMIT INSTITUTE OF MATH'S AND SCIENCE), created using modern web technologies.",
+            "subjects": "Please tell me your interests or career goals, and I can suggest suitable subjects or courses.",
+            "courses": "Please tell me your interests or career goals, and I can suggest suitable subjects or courses.",
+            "college": "Are you looking for specific colleges or general advice on how to choose one?",
+            "university": "Are you looking for specific colleges or general advice on how to choose one?",
+            "contact": "You can reach out to our academic advisor at advisor@aims.edu or call us at (123) 456-7890.",
+            "open youtube": () => {
                 displayMessage("Opening YouTube...");
                 window.open("https://youtube.com/@gyanofficialchannel3418?si=MI4OSUmyfwKj79IR", "_blank");
-            } else if (message.includes("open google")) {
+            },
+            "open google": () => {
                 displayMessage("Opening Google...");
                 window.open("https://google.com/", "_blank");
-            } else if (message.includes("time")) {
-                let time = new Date().toLocaleTimeString();
-                displayMessage(`The current time is ${time}`);
-            } else if (message.includes("date")) {
-                let date = new Date().toLocaleDateString();
-                displayMessage(`Today's date is ${date}`);
-            } else {
-                let searchQuery = message.replace("aims", "").trim();
-                if (searchQuery) {
-                    displayMessage(`Searching for ${searchQuery}`);
-                    window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, "_blank");
-                }
+            },
+            "time": () => {
+                displayMessage(`The current time is ${new Date().toLocaleTimeString()}`);
+            },
+            "date": () => {
+                displayMessage(`Today's date is ${new Date().toLocaleDateString()}`);
             }
+        };
+
+        function displayMessage(text, isUser = false) {
+            let messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", isUser ? "user-message" : "assistant-message");
+            messageDiv.innerText = text;
+            content.appendChild(messageDiv);
+
+            setTimeout(() => {
+                content.scrollTop = content.scrollHeight;
+            }, 0);
         }
 
-        // Handle button click or Enter key to send message
-        btn.addEventListener("click", () => {
+        function showTypingIndicator() {
+            let typingDiv = document.createElement("div");
+            typingDiv.classList.add("typing-indicator");
+            typingDiv.innerText = "Assistant is typing...";
+            content.appendChild(typingDiv);
+            content.scrollTop = content.scrollHeight;
+            return typingDiv;
+        }
+
+        function wishMe() {
+            let hours = new Date().getHours();
+            let greeting =
+                hours < 12 ? "Good Morning Students" :
+                hours < 18 ? "Good Afternoon Students" :
+                hours < 21 ? "Good Evening Students" : "Good Night Students";
+
+            displayMessage(greeting);
+        }
+        document.addEventListener("DOMContentLoaded", wishMe);
+
+        function takeCommand(message) {
+            message = message.toLowerCase().trim();
+
+            let typing = showTypingIndicator();
+
+            setTimeout(() => {
+                content.removeChild(typing);
+
+                if (responses[message]) {
+                    typeof responses[message] === "function" ? responses[message]() : displayMessage(responses[message]);
+                } else {
+                    displayMessage("I'm not sure how to respond to that. Try asking about subjects, courses, or contacting us!");
+                }
+            }, 1000);
+        }
+
+        function handleUserInput() {
             let userMessage = messageInput.value.trim();
-            if (userMessage) {
-                displayMessage(userMessage, true); // Show user's message
-                takeCommand(userMessage); // Process command
-                messageInput.value = ""; // Clear input
-            }
+            if (!userMessage) return;
+
+            displayMessage(userMessage, true);
+            takeCommand(userMessage);
+            setTimeout(() => (messageInput.value = ""), 100);
+        }
+
+        btn.addEventListener("click", handleUserInput);
+        messageInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") handleUserInput();
         });
 
-        messageInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-                btn.click(); // Trigger button click on Enter
-            }
-        });
+        // Generate suggestion buttons
+        function generateSuggestions() {
+            let suggestions = ["hello", "who are you", "subjects", "courses", "college", "contact", "time", "date"];
+            suggestions.forEach(text => {
+                let button = document.createElement("button");
+                button.classList.add("suggestion-btn");
+                button.innerText = text;
+                button.addEventListener("click", () => {
+                    messageInput.value = text;
+                    handleUserInput();
+                });
+                suggestionsContainer.appendChild(button);
+            });
+        }
+
+        generateSuggestions();
     </script>
+
 </body>
 </html>
